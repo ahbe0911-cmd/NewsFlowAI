@@ -40,21 +40,22 @@ jobs:
 
       - name: Reconstruct BiometricPhoto source
         run: |
+          rm -rf /tmp/biometric-src
           mkdir -p /tmp/biometric-src
           cat biometric-src/part-* | base64 -d > /tmp/BiometricPhoto-source.zip
           unzip -q /tmp/BiometricPhoto-source.zip -d /tmp/biometric-src
-          mkdir -p /tmp/biometric-src/BiometricPhotoApp/app/src/main/res/font
+          mkdir -p /tmp/biometric-src/app/src/main/res/font
           curl -L --fail --retry 3 \
             https://raw.githubusercontent.com/rastikerdar/vazirmatn/master/fonts/ttf/Vazirmatn-Regular.ttf \
-            -o /tmp/biometric-src/BiometricPhotoApp/app/src/main/res/font/vazirmatn.ttf
+            -o /tmp/biometric-src/app/src/main/res/font/vazirmatn.ttf
 
       - name: Build debug APK
-        working-directory: /tmp/biometric-src/BiometricPhotoApp
+        working-directory: /tmp/biometric-src
         run: gradle --no-daemon --stacktrace assembleDebug
 
       - name: Prepare APK
         run: |
-          cp /tmp/biometric-src/BiometricPhotoApp/app/build/outputs/apk/debug/app-debug.apk BiometricPhoto-v1.4.0.apk
+          cp /tmp/biometric-src/app/build/outputs/apk/debug/app-debug.apk BiometricPhoto-v1.4.0.apk
           sha256sum BiometricPhoto-v1.4.0.apk > BiometricPhoto-v1.4.0.apk.sha256
 
       - name: Upload APK artifact
